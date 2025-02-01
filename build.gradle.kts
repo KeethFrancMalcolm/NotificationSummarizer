@@ -1,30 +1,28 @@
+// Remove any duplicate buildscript blocks—keep only one here.
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Set your desired AGP version here (for example, 8.8.0)
+        classpath("com.android.tools.build:gradle:8.8.0")
+    }
+}
+
+// (Optional) Plugins block at the root level if needed.
 plugins {
-    kotlin("jvm") version "1.9.24"
+    // You can leave this empty or add root-level plugins if necessary.
 }
-buildscript {
+
+// Use dependency resolution management if desired.
+dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
     }
-    dependencies {
-        classpath("com.android.tools.build:gradle:8.8.0")
-    }
 }
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath("com.android.tools.build:gradle:8.8.0")
-    }
-}
-dependencies {
-    implementation(kotlin("stdlib-jdk8"))
-}
-repositories {
-    mavenCentral()
-}
-kotlin {
-    jvmToolchain(8)
-}
+
+rootProject.name = "NotificationSummarizer"
+// Include your modules (assuming you have an "app" module):
+include(":app")
