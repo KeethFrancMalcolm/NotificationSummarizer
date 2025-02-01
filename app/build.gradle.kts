@@ -1,5 +1,6 @@
 plugins {
-    alias(libs.plugins.android.application) // Should resolve to version 8.8.0
+    // These aliases should be defined in your version catalog (gradle/libs.versions.toml)
+    alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
@@ -16,7 +17,7 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Add your build config field directly inside defaultConfig
+        // Place buildConfigField directly here
         buildConfigField("String", "GEMINI_API_KEY", "\"${project.findProperty("GEMINI_API_KEY")}\"")
     }
 
@@ -29,14 +30,16 @@ android {
             )
         }
     }
-
+    
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    
     kotlinOptions {
         jvmTarget = "11"
     }
+    
     buildFeatures {
         compose = true
     }
