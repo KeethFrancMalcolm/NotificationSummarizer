@@ -13,7 +13,8 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        kotlin("jvm") version "1.9.10" // Ensure this is a compatible Kotlin version.
+        // Specify a Kotlin version that works with your setup.
+        kotlin("jvm") version "1.9.10"
     }
 }
 
