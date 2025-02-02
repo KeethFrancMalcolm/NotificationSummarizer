@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
 
+    // Securely retrieve the Gemini API key from BuildConfig.
     private val geminiApiKey = BuildConfig.GEMINI_API_KEY
 
     private val gemini = GenerativeModel(
@@ -36,10 +37,10 @@ class NotificationListener : NotificationListenerService() {
                     "Summarize this notification in one short sentence: ${originalText.take(1000)}"
                 ).text ?: "No summary available"
 
+                // Dismiss the original notification.
                 cancelNotification(notificationKey)
-
+                // Create and show the summarized notification.
                 createSummaryNotification(originalTitle, summary, packageName)
-
             } catch (e: Exception) {
                 Log.e("NotificationListener", "Error processing notification: ${e.message}", e)
             }
@@ -57,7 +58,11 @@ class NotificationListener : NotificationListenerService() {
         }
     }
 
-    private fun createSummaryNotification(originalTitle: String, summaryText: String, packageName: String) {
+    private fun createSummaryNotification(
+        originalTitle: String,
+        summaryText: String,
+        packageName: String
+    ) {
         val channelId = "summary_$packageName"
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -73,7 +78,7 @@ class NotificationListener : NotificationListenerService() {
         val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Summarized: $originalTitle")
             .setContentText(summaryText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_launcher_foreground) // Ensure this resource exists.
             .setLargeIcon(getAppIcon(packageName))
             .setAutoCancel(true)
             .build()
