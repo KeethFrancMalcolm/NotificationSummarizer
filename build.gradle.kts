@@ -1,25 +1,18 @@
-// Build script configuration
+// Root build.gradle.kts
+
 buildscript {
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.1")  // Ensure compatibility with your project
+        // Use your desired Android Gradle Plugin version.
+        classpath("com.android.tools.build:gradle:8.8.0")
     }
 }
 
-// Plugin declarations (if needed)
 plugins {
-    id("org.jetbrains.kotlin.android") version "1.9.0" apply false
+    // Add any root-level plugins here if needed.
 }
 
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-    }
-}
-
-rootProject.name = "NotificationSummarizer"
-include(":app")
+// Other global build configurations can go here.
