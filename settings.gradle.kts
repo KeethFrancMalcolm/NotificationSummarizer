@@ -1,3 +1,5 @@
+// settings.gradle.kts
+
 pluginManagement {
     repositories {
         google {
@@ -11,7 +13,7 @@ pluginManagement {
         gradlePluginPortal()
     }
     plugins {
-        kotlin("jvm") version "1.9.10"  // Updated to a stable version
+        kotlin("jvm") version "1.9.10" // Ensure this is a compatible Kotlin version.
     }
 }
 
