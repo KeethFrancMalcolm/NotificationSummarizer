@@ -16,39 +16,32 @@ import kotlinx.coroutines.launch
 
 class NotificationListener : NotificationListenerService() {
 
-    // Replace with your Gemini API key (step 7 will show how to secure this)
+    private val geminiApiKey = BuildConfig.GEMINI_API_KEY
+
     private val gemini = GenerativeModel(
         modelName = "gemini-pro",
-        apiKey = "AIzaSyB6y9bBQRtQgOl_mVzCNspTP2n6Gx11LQ0"
+        apiKey = geminiApiKey
     )
 
     override fun onNotificationPosted(statusBarNotification: StatusBarNotification) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Step 1: Get notification details
                 val packageName = statusBarNotification.packageName
                 val notification = statusBarNotification.notification
                 val originalTitle = notification.extras.getString(Notification.EXTRA_TITLE) ?: "Notification"
                 val originalText = notification.extras.getString(Notification.EXTRA_TEXT) ?: ""
                 val notificationKey = statusBarNotification.key
 
-                // Step 2: Summarize with Gemini
                 val summary = gemini.generateContent(
                     "Summarize this notification in one short sentence: ${originalText.take(1000)}"
                 ).text ?: "No summary available"
 
-                // Step 3: Dismiss original notification
                 cancelNotification(notificationKey)
 
-                // Step 4: Create new summarized notification
-                createSummaryNotification(
-                    originalTitle = originalTitle,
-                    summaryText = summary,
-                    packageName = packageName
-                )
+                createSummaryNotification(originalTitle, summary, packageName)
 
             } catch (e: Exception) {
-                Log.e("NotificationListener", "Error: ${e.message}")
+                Log.e("NotificationListener", "Error processing notification: ${e.message}", e)
             }
         }
     }
@@ -59,49 +52,46 @@ class NotificationListener : NotificationListenerService() {
             val drawable = pm.getApplicationIcon(packageName)
             (drawable as BitmapDrawable).bitmap
         } catch (e: Exception) {
+            Log.e("NotificationListener", "Error fetching app icon: ${e.message}")
             null
         }
     }
 
-    private fun createSummaryNotification(
-        originalTitle: String,
-        summaryText: String,
-        packageName: String
-    ) {
+    private fun createSummaryNotification(originalTitle: String, summaryText: String, packageName: String) {
         val channelId = "summary_$packageName"
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        // Create notification channel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel(
+            val channel = NotificationChannel(
                 channelId,
                 "Summarized Notifications",
                 NotificationManager.IMPORTANCE_DEFAULT
-            ).apply { notificationManager.createNotificationChannel(this) }
+            )
+            notificationManager.createNotificationChannel(channel)
         }
 
-        // Build notification
-        NotificationCompat.Builder(this, channelId)
+        val notification = NotificationCompat.Builder(this, channelId)
             .setContentTitle("Summarized: $originalTitle")
             .setContentText(summaryText)
-            .setSmallIcon(R.drawable.ic_launcher_foreground) // Default icon
-            .apply {
-                getAppIcon(packageName)?.let { icon ->
-                    setLargeIcon(icon)
-                }
-            }
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setLargeIcon(getAppIcon(packageName))
             .setAutoCancel(true)
             .build()
-            .also { notificationManager.notify(packageName.hashCode(), it) }
+
+        notificationManager.notify(packageName.hashCode(), notification)
     }
 
     private fun cancelNotification(key: String) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            cancelNotification(key)
-        } else {
-            activeNotifications.firstOrNull { it.key == key }?.let {
-                cancelNotification(it.packageName, it.tag, it.id)
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                cancelNotification(key)
+            } else {
+                activeNotifications.firstOrNull { it.key == key }?.let {
+                    cancelNotification(it.packageName, it.tag, it.id)
+                }
             }
+        } catch (e: Exception) {
+            Log.e("NotificationListener", "Error canceling notification: ${e.message}")
         }
     }
 }
