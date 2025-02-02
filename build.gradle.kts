@@ -1,4 +1,4 @@
-// Root build.gradle.kts
+// build.gradle.kts (root)
 
 buildscript {
     repositories {
@@ -6,13 +6,14 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        // Use your desired Android Gradle Plugin version.
+        // Set your desired Android Gradle Plugin version.
         classpath("com.android.tools.build:gradle:8.8.0")
     }
 }
 
 plugins {
-    // Add any root-level plugins here if needed.
+    // You can add any root-level plugins here if needed.
 }
 
-// Other global build configurations can go here.
+// (Optional) Global configurations can go here.
+// Do NOT include settings DSL like dependencyResolutionManagement, rootProject.name, or include().
